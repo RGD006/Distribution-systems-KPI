@@ -1,0 +1,99 @@
+# ─────────────────────────────
+# Visual Studio / C++ Projects
+# ─────────────────────────────
+
+## Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+x64/
+x86/
+ARM/
+ARM64/
+Release/
+Debug/
+*.userosscache
+*.suo
+*.pdb
+*.obj
+*.idb
+*.pch
+*.ilk
+*.exp
+*.lib
+*.exe
+*.dll
+*.manifest
+*.tlog
+*.ipch
+*.log
+*.lastbuildstate
+*.unsuccessfulbuild
+*.intermediate.manifest
+
+## Visual Studio user-specific files
+*.user
+*.userprefs
+*.rsuser
+*.opendb
+*.VC.db
+*.VC.VC.opendb
+
+## IDE folders
+.vs/
+.vscode/ipch/
+
+## Auto-generated project files
+*.VC.db
+*.VC.opendb
+*.aps
+*.ncb
+*.sdf
+*.cachefile
+
+## Test results
+TestResults/
+*.trx
+
+## Backup and temporary files
+*.tmp
+*.bak
+*.log
+*.sbr
+*.scc
+*.o
+*.tli
+*.tlh
+*.obj
+
+## Resource compiler intermediates
+*.res
+*.rctmp
+
+## Icon cache / thumbnails
+*.cache
+*.db
+*.pidb
+
+## Crash dumps
+*.dmp
+
+## VS Code workspace settings (optional)
+.vscode/settings.json
+
+## Others (safe to ignore)
+*.ipdb
+*.iobj
+*.rsp
+*.dat
+*.tlog
+*.map
+
+# ─────────────────────────────
+# Custom additions for Windows
+# ─────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
