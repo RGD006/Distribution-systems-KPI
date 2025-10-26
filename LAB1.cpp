@@ -134,8 +134,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     } break;
     case WM_PAINT: {
       PAINTSTRUCT ps;
-      HDC hdc = BeginPaint(hWnd, &ps);
-      // TODO: Add any drawing code that uses hdc here...
+      constexpr size_t polygonNumber = 5;
+      HDC hdc                        = BeginPaint(hWnd, &ps);
+      HGDIOBJ object                 = nullptr;
+
+      SelectObject(hdc, GetStockObject(DC_BRUSH));
+      SelectObject(hdc, GetStockObject(DC_PEN));
+
+      SetDCBrushColor(hdc, RGB(255, 0, 0));
+      Rectangle(hdc, 50, 50, 200, 200);
+
+      SetDCBrushColor(hdc, RGB(0, 255, 0));
+      Ellipse(hdc, 300, 50, 500, 200);
+
+      SetDCBrushColor(hdc, RGB(0, 0, 255));
+      POINT pollygonPoints[polygonNumber] = {
+          {500, 50},
+          {550, 100},
+          {550, 200},
+          {700, 100},
+          {700, 50},
+      };
+      Polygon(hdc, pollygonPoints, polygonNumber);
+
       EndPaint(hWnd, &ps);
     } break;
     case WM_DESTROY:
