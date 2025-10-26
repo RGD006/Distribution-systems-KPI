@@ -25,6 +25,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   UNREFERENCED_PARAMETER(hPrevInstance);
   UNREFERENCED_PARAMETER(lpCmdLine);
 
+  // TODO: Place code here.
+
   // Initialize global strings
   LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
   LoadStringW(hInstance, IDC_LAB1, szWindowClass, MAX_LOADSTRING);
@@ -61,14 +63,14 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
   wcex.cbSize = sizeof(WNDCLASSEX);
 
-  wcex.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+  wcex.style         = CS_HREDRAW | CS_VREDRAW;
   wcex.lpfnWndProc   = WndProc;
   wcex.cbClsExtra    = 0;
   wcex.cbWndExtra    = 0;
   wcex.hInstance     = hInstance;
-  wcex.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ERROR));
-  wcex.hCursor       = LoadCursor(nullptr, IDC_ICON);
-  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOWTEXT + 1);
+  wcex.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LAB1));
+  wcex.hCursor       = LoadCursor(nullptr, IDC_ARROW);
+  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
   wcex.lpszMenuName  = MAKEINTRESOURCEW(IDC_LAB1);
   wcex.lpszClassName = szWindowClass;
   wcex.hIconSm       = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -90,8 +92,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
   hInst = hInstance;  // Store instance handle in our global variable
 
-  HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW | WS_VSCROLL,
-                            CW_USEDEFAULT, 0, 300, 200, nullptr, nullptr, hInstance, nullptr);
+  HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+                            CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
   if (!hWnd) {
     return FALSE;
@@ -139,15 +141,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
       PostQuitMessage(0);
       break;
-    case WM_LBUTTONDBLCLK: {
-      std::wstring sysMetricsStr;
-      sysMetricsStr += L"Mininmal window width: " + std::to_wstring(GetSystemMetrics(SM_CXMIN)) + L"\n";
-      sysMetricsStr += L"Maximal window width: " + std::to_wstring(GetSystemMetrics(SM_CXMAXTRACK)) + L"\n";
-      sysMetricsStr += L"Minimal icon width: " + std::to_wstring(GetSystemMetrics(SM_CXICON)) + L"\n";
-      sysMetricsStr += L"Maximal icon width: " + std::to_wstring(GetSystemMetrics(SM_CYICON)) + L"\n";
-
-      MessageBox(hWnd, sysMetricsStr.data(), L"Metrics info", MB_NOFOCUS);
-    } break;
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
