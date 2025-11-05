@@ -127,9 +127,11 @@
     <ClInclude Include="LAB1.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ThreadFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LAB1.cpp" />
+    <ClCompile Include="ThreadFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LAB1.rc" />
