@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "LAB1.h"
+#include "commdlg.h"
 #include <string>
 
 #define MAX_LOADSTRING 100
@@ -11,6 +12,7 @@
 HINSTANCE hInst;                      // current instance
 WCHAR szTitle[MAX_LOADSTRING];        // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];  // the main window class name
+FileInfo fileInfoMain;
 
 // Forward declarations of functions included in this code module:
 ATOM MyRegisterClass(HINSTANCE hInstance);
@@ -104,6 +106,27 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   UpdateWindow(hWnd);
 
   return TRUE;
+}
+
+static LPWSTR ShowOpenFileDialog(HWND hWnd)
+{
+  OPENFILENAMEW ofn;
+  wchar_t szFile[MAX_PATH] = {0};
+
+  ZeroMemory(&ofn, sizeof(ofn));
+  ofn.lStructSize  = sizeof(ofn);
+  ofn.hwndOwner    = hWnd;
+  ofn.lpstrFile    = szFile;
+  ofn.nMaxFile     = sizeof(szFile) / sizeof(szFile[0]);
+  ofn.lpstrFilter  = L"All files\0*.*\0Text Files\0*.TXT\0";
+  ofn.nFilterIndex = 1;
+  ofn.Flags        = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+  if (GetOpenFileNameW(&ofn)) {
+    return ofn.lpstrFile;
+  } else {
+    return nullptr;
+  }
 }
 
 //

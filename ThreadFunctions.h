@@ -26,6 +26,6 @@ private:
 
 public:
   FileInfo();
-  void startGetInfo(std::wstring path);
+  void startGetInfo(std::wstring path, HWND *hWindow);
   FILESTATS getInfo(void);
 };
