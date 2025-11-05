@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "LAB1.h"
+#include <string>
 
 #define MAX_LOADSTRING 100
 
@@ -93,7 +94,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   hInst = hInstance;  // Store instance handle in our global variable
 
   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-                            CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+                            CW_USEDEFAULT, 0, 300, 300, nullptr, nullptr, hInstance, nullptr);
 
   if (!hWnd) {
     return FALSE;
@@ -118,6 +119,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   switch (message) {
+    case WM_CREATE: {
+      HWND hwndButton = CreateWindow(
+          L"BUTTON",                                              // Predefined class; Unicode assumed
+          L"Read File",                                           // Button text
+          WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+          10,                                                     // x position
+          10,                                                     // y position
+          100,                                                    // Button width
+          100,                                                    // Button height
+          hWnd,                                                   // Parent window
+          (HMENU)IDC_MYBUTTON,                                    // Menu.
+          (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+          NULL);  // Pointer not needed.
+    } break;
     case WM_COMMAND: {
       int wmId = LOWORD(wParam);
       // Parse the menu selections:
@@ -128,6 +143,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDM_EXIT:
           DestroyWindow(hWnd);
           break;
+        case IDC_MYBUTTON:
+          // TODO: Add button event function
         default:
           return DefWindowProc(hWnd, message, wParam, lParam);
       }
@@ -135,7 +152,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT: {
       PAINTSTRUCT ps;
       HDC hdc = BeginPaint(hWnd, &ps);
-      // TODO: Add any drawing code that uses hdc here...
       EndPaint(hWnd, &ps);
     } break;
     case WM_DESTROY:
