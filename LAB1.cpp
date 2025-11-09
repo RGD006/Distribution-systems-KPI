@@ -167,7 +167,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
           DestroyWindow(hWnd);
           break;
         case IDC_MYBUTTON:
-          // TODO: Add button event function
+          fileInfoMain.startGetInfo(ShowOpenFileDialog(hWnd), &hWnd);
         default:
           return DefWindowProc(hWnd, message, wParam, lParam);
       }

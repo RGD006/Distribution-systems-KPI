@@ -16,9 +16,17 @@ struct FILESTATS {
   uint32_t numberCharacters;
 };
 
+enum EF_STATUS
+{
+  EF_STATUS_READ_FILE,
+  EF_STATUS_WRITE_STATS,
+  EF_STATUS_OUTPUT_STATS,
+}
+
 class FileInfo {
 private:
   HWND *windowHandler;
+  std::wstring path;
   FILESTATS fileStats;
   EVENTFUNC efReadFile;
   EVENTFUNC efWriteStats;
@@ -28,4 +36,5 @@ public:
   FileInfo();
   void startGetInfo(std::wstring path, HWND *hWindow);
   FILESTATS getInfo(void);
+  EVENTFUNC getEventFile(EF_STATUS status);
 };

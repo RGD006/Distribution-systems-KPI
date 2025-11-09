@@ -18,28 +18,48 @@ EVENTFUNC::EVENTFUNC()
 
 FileInfo::FileInfo()
     : efReadFile(CreateSemaphore(NULL, 1, 1, NULL),
-                 CreateThread(NULL, 0, ReadFile, NULL, 0, NULL)),
+                 CreateThread(NULL, 0, ReadFile, this, 0, NULL)),
       efWriteStats(CreateSemaphore(NULL, 1, 1, NULL),
-                 CreateThread(NULL, 0, WriteStats, NULL, 0, NULL)),
+                   CreateThread(NULL, 0, WriteStats, this, 0, NULL)),
       efOutputStats(CreateSemaphore(NULL, 1, 1, NULL),
-                 CreateThread(NULL, 0, OutputStats, NULL, 0, NULL))
+                    CreateThread(NULL, 0, OutputStats, this, 0, NULL))
 {
 }
 
-DWORD WINAPI ReadFile(LPVOID filePath)
+void FileInfo::startGetInfo(std::wstring path, HWND *hWindow)
 {
+  windowHandler = hWindow;
+  this->path    = path;
+
+  if (WaitForSingleObject(efReadFile.sEvent, 0L)) {
+    if (!ReleaseSemaphore(&efReadFile, 1, NULL)) {
+      MessageBox(
+          *hWindow,
+          L"Can't release start semaphore",
+          L"Error",
+          MB_ICONERROR);
+    }
+  } 
+}
+
+// TODO: добавить сюда гетер для статуса семафора
+DWORD WINAPI ReadFile(LPVOID fileInfo)
+{
+  for (;;) {
+    if (WaitForSingleObject(efReadFile.sEvent, 0L)) {
+
+    }
+  }
 
   return 0;
 }
 
-DWORD WINAPI WriteStats(LPVOID dataArray)
+DWORD WINAPI WriteStats(LPVOID fileInfo)
 {
-
   return 0;
 }
 
-DWORD WINAPI OutputStats(LPVOID window)
+DWORD WINAPI OutputStats(LPVOID fileInfo)
 {
-
   return 0;
 }
