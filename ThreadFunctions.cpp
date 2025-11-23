@@ -22,20 +22,6 @@ EVENTFUNC::EVENTFUNC()
 
 FileInfo::FileInfo()
 {
-  EVENTFUNC *efReadFile       = new EVENTFUNC;
-  states[EF_STATUS_READ_FILE] = efReadFile;
-  efReadFile->sEvent          = CreateSemaphore(NULL, 0, 1, NULL);
-  efReadFile->fEvent          = CreateThread(NULL, 0, ReadFile, this, 0, NULL);
-
-  EVENTFUNC *efWriteStats       = new EVENTFUNC;
-  states[EF_STATUS_WRITE_STATS] = efWriteStats;
-  efWriteStats->sEvent          = CreateSemaphore(NULL, 0, 1, NULL);
-  efWriteStats->fEvent          = CreateThread(NULL, 0, WriteStats, this, 0, NULL);
-
-  EVENTFUNC *efOutputStats       = new EVENTFUNC;
-  states[EF_STATUS_OUTPUT_STATS] = efOutputStats;
-  efOutputStats->sEvent          = CreateSemaphore(NULL, 0, 1, NULL);
-  efOutputStats->fEvent          = CreateThread(NULL, 0, OutputStats, this, 0, NULL);
 }
 
 void FileInfo::releaseSemaphore(HANDLE sem)
@@ -55,6 +41,24 @@ EVENTFUNC *FileInfo::getEventFile(EF_STATUS status)
 
 void FileInfo::startGetFileStats(std::wstring path, HWND *hWindow)
 {
+  memset(&fileStats, 0, sizeof(FILESTATS));
+  fileData.clear();
+
+  EVENTFUNC *efReadFile       = new EVENTFUNC;
+  states[EF_STATUS_READ_FILE] = efReadFile;
+  efReadFile->sEvent          = CreateSemaphore(NULL, 0, 1, NULL);
+  efReadFile->fEvent          = CreateThread(NULL, 0, ReadFile, this, 0, NULL);
+
+  EVENTFUNC *efWriteStats       = new EVENTFUNC;
+  states[EF_STATUS_WRITE_STATS] = efWriteStats;
+  efWriteStats->sEvent          = CreateSemaphore(NULL, 0, 1, NULL);
+  efWriteStats->fEvent          = CreateThread(NULL, 0, WriteStats, this, 0, NULL);
+
+  EVENTFUNC *efOutputStats       = new EVENTFUNC;
+  states[EF_STATUS_OUTPUT_STATS] = efOutputStats;
+  efOutputStats->sEvent          = CreateSemaphore(NULL, 0, 1, NULL);
+  efOutputStats->fEvent          = CreateThread(NULL, 0, OutputStats, this, 0, NULL);
+
   this->path       = path;
   HANDLE semHandle = getEventFile(EF_STATUS_READ_FILE)->sEvent;
   releaseSemaphore(semHandle);
@@ -90,6 +94,13 @@ void FileInfo::appendData(std::wstring line)
   fileData += line;
 }
 
+void FileInfo::closeThreads(void)
+{
+  for (auto &el : states) {
+    delete el.second;
+  }
+}
+
 DWORD WINAPI ReadFile(LPVOID fileInfo)
 {
   FileInfo *object = reinterpret_cast<FileInfo *>(fileInfo);
@@ -104,8 +115,10 @@ DWORD WINAPI ReadFile(LPVOID fileInfo)
   while (std::getline(file, line)) {
     object->appendData(line);
     object->appendData(L"\n");
+    object->releaseSemaphore(object->getEventFile(EF_STATUS_WRITE_STATS)->sEvent);
   }
 
+  object->setFileRead(true);
   object->releaseSemaphore(object->getEventFile(EF_STATUS_WRITE_STATS)->sEvent);
 
   return 0;
@@ -119,7 +132,12 @@ DWORD WINAPI WriteStats(LPVOID fileInfo)
   constexpr DWORD countStatsTimeout = 5000;
 
   while (true) {
-    if (WaitForSingleObject(semHandle, countStatsTimeout) == WAIT_OBJECT_0) {
+    if (WaitForSingleObject(semHandle, 0L) == WAIT_OBJECT_0) {
+      if (object->getFileRead()) {
+        object->releaseSemaphore(object->getEventFile(EF_STATUS_OUTPUT_STATS)->sEvent);
+        break;
+      }
+
       for (;;) {
         wchar_t ch = object->getFileCharacter(fileStats->numberCharacters);
 
@@ -134,10 +152,10 @@ DWORD WINAPI WriteStats(LPVOID fileInfo)
         if (ch == L' ' || ch == L'\t')
           fileStats->numberWords++;
       }
-
-      object->releaseSemaphore(object->getEventFile(EF_STATUS_OUTPUT_STATS)->sEvent);
     }
   }
+
+  return 0;
 }
 
 DWORD WINAPI OutputStats(LPVOID fileInfo)
@@ -154,14 +172,14 @@ DWORD WINAPI OutputStats(LPVOID fileInfo)
       L"\nNumber characters: " + std::to_wstring(fileStats->numberCharacters);
 
   std::wstring *stats = new std::wstring(resultInfo);
+  object->setFileRead(false);
   MessageBox(NULL, resultInfo.data(), L"Success", MB_OK);
+  object->closeThreads();
 
   return 0;
 }
 
 FileInfo::~FileInfo()
 {
-  for (auto &el : states) {
-    delete el.second;
-  }
+  closeThreads();
 }

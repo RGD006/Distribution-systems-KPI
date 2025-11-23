@@ -43,5 +43,6 @@ public:
   bool getFileRead(void);
   void setFileRead(bool status);
   void releaseSemaphore(HANDLE sem);
+  void closeThreads(void);
   EVENTFUNC *getEventFile(EF_STATUS status);
 };
