@@ -17,6 +17,8 @@
 #ifndef IDC_STATIC
   #define IDC_STATIC -1
 #endif
+
+#define WM_SHOW_STATS  (WM_USER + 1)
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED

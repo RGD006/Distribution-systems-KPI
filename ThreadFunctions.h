@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
 #include <string>
+#include <map>
+#include <wchar.h>
 #include <cstdint>
 
 struct EVENTFUNC {
@@ -16,25 +18,30 @@ struct FILESTATS {
   uint32_t numberCharacters;
 };
 
-enum EF_STATUS
-{
+enum EF_STATUS {
   EF_STATUS_READ_FILE,
   EF_STATUS_WRITE_STATS,
   EF_STATUS_OUTPUT_STATS,
-}
+};
 
 class FileInfo {
 private:
-  HWND *windowHandler;
+  std::map<EF_STATUS, EVENTFUNC *> states;
+  std::wstring fileData;
   std::wstring path;
+  bool isFileRead;
   FILESTATS fileStats;
-  EVENTFUNC efReadFile;
-  EVENTFUNC efWriteStats;
-  EVENTFUNC efOutputStats;
 
 public:
   FileInfo();
-  void startGetInfo(std::wstring path, HWND *hWindow);
-  FILESTATS getInfo(void);
-  EVENTFUNC getEventFile(EF_STATUS status);
+  ~FileInfo();
+  const wchar_t *getPath(void);
+  wchar_t getFileCharacter(const size_t &pos);
+  void startGetFileStats(std::wstring path, HWND *hWindow);
+  void appendData(std::wstring line);
+  FILESTATS *getFileStats(void);
+  bool getFileRead(void);
+  void setFileRead(bool status);
+  void releaseSemaphore(HANDLE sem);
+  EVENTFUNC *getEventFile(EF_STATUS status);
 };

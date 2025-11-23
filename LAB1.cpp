@@ -108,25 +108,23 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   return TRUE;
 }
 
-static LPWSTR ShowOpenFileDialog(HWND hWnd)
+static std::wstring ShowOpenFileDialog(HWND hWnd)
 {
   OPENFILENAMEW ofn;
   wchar_t szFile[MAX_PATH] = {0};
 
   ZeroMemory(&ofn, sizeof(ofn));
-  ofn.lStructSize  = sizeof(ofn);
-  ofn.hwndOwner    = hWnd;
-  ofn.lpstrFile    = szFile;
-  ofn.nMaxFile     = sizeof(szFile) / sizeof(szFile[0]);
-  ofn.lpstrFilter  = L"All files\0*.*\0Text Files\0*.TXT\0";
-  ofn.nFilterIndex = 1;
-  ofn.Flags        = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+  ofn.lStructSize = sizeof(ofn);
+  ofn.hwndOwner   = hWnd;
+  ofn.lpstrFile   = szFile;
+  ofn.nMaxFile    = MAX_PATH;
+  ofn.lpstrFilter = L"All files\0*.*\0Text Files\0*.TXT\0";
+  ofn.Flags       = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
   if (GetOpenFileNameW(&ofn)) {
-    return ofn.lpstrFile;
-  } else {
-    return nullptr;
+    return std::wstring(szFile);
   }
+  return L"";
 }
 
 //
@@ -166,8 +164,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDM_EXIT:
           DestroyWindow(hWnd);
           break;
-        case IDC_MYBUTTON:
-          fileInfoMain.startGetInfo(ShowOpenFileDialog(hWnd), &hWnd);
+        case IDC_MYBUTTON: {
+          std::wstring path = ShowOpenFileDialog(hWnd);
+
+          if (!path.empty()) {
+            fileInfoMain.startGetFileStats(path, &hWnd);
+          }
+        }
         default:
           return DefWindowProc(hWnd, message, wParam, lParam);
       }
